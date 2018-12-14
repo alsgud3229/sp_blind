@@ -1,32 +1,49 @@
 #include "motor.h"
 
-#define SERVO 1
-const int pin = 18;
+const int pin = 24;
+const int pin2 = 18;
+static int RUN_BIT = FALSE;
 
-int servo(void){
-	int shoot;
+int motor(int angle, int cycle){		// cycle starts from 1 to n
 
 	if(wiringPiSetupGpio() == -1)
 		return 1;
-	//pinMode(pin, OUTPUT);
-	//pinMode(pin, PWM_OUTPUT);
 
+	
 	softPwmCreate(pin, 0, 100);
-	while(1){
-		scanf("%d", &shoot);
-		if(shoot==1){
-			softPwmWrite(pin, 20);
-			//usleep(88000);
-			//softPwmWrite(pin, 0);
-			//return 0;
+	softPwmCreate(pin2, 0, 100);
+
+	if((cycle%3) == 2)	//is it lunch?
+		RUN_BIT = FALSE;
+	else
+		RUN_BIT = TRUE;
+
+	if(angle==1){ // angle = 1, 45 degree 
+		if(RUN_BIT){ // after breakfast and dinner
+			softPwmWrite(pin, 24);	
+			softPwmWrite(pin2, 24);	
+			usleep(80000);
+			softPwmWrite(pin2,0); 
+			usleep(3000);		// Motor A and motor B were not perfectly synched. Motor B had to stop 3000usec prior to motor A.
+			softPwmWrite(pin,0);	
 		}
-		else if(shoot==2){
-			softPwmWrite(pin,5);
-			//usleep(100000);
-			//softPwmWrite(pin,0);
+		else{ // after lunch
+			softPwmWrite(pin, 24);
+			usleep(83000);
+			softPwmWrite(pin, 0);
 		}
-		else if(shoot == 3) return 0;
 	}
+	else if(angle==2){		// angle = 2, flushing the container
+		softPwmWrite(pin, 24);
+		softPwmWrite(pin2, 24);
+		usleep(470000);
+		softPwmWrite(pin, 0);
+		softPwmWrite(pin2, 0);
+	}
+	else{
+		printf("invalid input\n");
+	}
+	
 	
 	return 0;
 }

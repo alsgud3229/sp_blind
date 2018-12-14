@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <wiringPi.h>
-#include <softPwm.h>
-#include <unistd.h>
+#include <softPwm.h> 
 
-int servo(void);
-
+int motor(int angle, int cycle);
